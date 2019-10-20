@@ -14,6 +14,7 @@
 		2A3EF6F0235C6AFF0065B2DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A3EF6EF235C6AFF0065B2DC /* Assets.xcassets */; };
 		2A3EF6F3235C6AFF0065B2DC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2A3EF6F1235C6AFF0065B2DC /* LaunchScreen.storyboard */; };
 		2A983438235C71B500782C82 /* DescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A983437235C71B500782C82 /* DescriptionViewController.swift */; };
+		2A98343B235CAC9C00782C82 /* Job.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A98343A235CAC9C00782C82 /* Job.swift */; };
 		DF794DAD8B7FA5F8255130D3 /* Pods_GithubJobsTestCase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E324414468B03C0DA04C8EF8 /* Pods_GithubJobsTestCase.framework */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +28,7 @@
 		2A3EF6F2235C6AFF0065B2DC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2A3EF6F4235C6AFF0065B2DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2A983437235C71B500782C82 /* DescriptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionViewController.swift; sourceTree = "<group>"; };
+		2A98343A235CAC9C00782C82 /* Job.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Job.swift; sourceTree = "<group>"; };
 		4A8CE9F03C77AD4EF287DC58 /* Pods-GithubJobsTestCase.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GithubJobsTestCase.release.xcconfig"; path = "Target Support Files/Pods-GithubJobsTestCase/Pods-GithubJobsTestCase.release.xcconfig"; sourceTree = "<group>"; };
 		E324414468B03C0DA04C8EF8 /* Pods_GithubJobsTestCase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GithubJobsTestCase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9243E7FACBC9D61057483F0 /* Pods-GithubJobsTestCase.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GithubJobsTestCase.debug.xcconfig"; path = "Target Support Files/Pods-GithubJobsTestCase/Pods-GithubJobsTestCase.debug.xcconfig"; sourceTree = "<group>"; };
@@ -65,6 +67,7 @@
 		2A3EF6E5235C6AFB0065B2DC /* GithubJobsTestCase */ = {
 			isa = PBXGroup;
 			children = (
+				2A983439235CAC8400782C82 /* Model */,
 				2A3EF6FC235C6B3D0065B2DC /* App */,
 				2A3EF6FB235C6B330065B2DC /* Controllers */,
 				2A3EF6FA235C6B200065B2DC /* View */,
@@ -99,6 +102,14 @@
 				2A3EF6E8235C6AFB0065B2DC /* SceneDelegate.swift */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		2A983439235CAC8400782C82 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2A98343A235CAC9C00782C82 /* Job.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		891CA24AD49908CABE8D381F /* Frameworks */ = {
@@ -237,6 +248,7 @@
 				2A983438235C71B500782C82 /* DescriptionViewController.swift in Sources */,
 				2A3EF6E7235C6AFB0065B2DC /* AppDelegate.swift in Sources */,
 				2A3EF6E9235C6AFB0065B2DC /* SceneDelegate.swift in Sources */,
+				2A98343B235CAC9C00782C82 /* Job.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
