@@ -14,7 +14,7 @@ import SwiftyJSON
 
 class SearchTableViewController: UITableViewController {
     
-    
+    var jobs: [Job] = []
     @IBOutlet weak var jobsSearchBar: UISearchBar!
     
     enum GetJobsFailureReason: Int, Error {
@@ -23,26 +23,7 @@ class SearchTableViewController: UITableViewController {
     }
 
     let disposeBag = DisposeBag()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        jobsSearchBar.rx.text
-            .observeOn(MainScheduler.asyncInstance)
-            .debounce(.milliseconds(1500), scheduler: MainScheduler.instance)
-            .distinctUntilChanged()
-            .flatMap { value in return self.getJobs(searchQuery: value!) }
-            .subscribe { (event) in self.printJobLocation(jobs: event.element!) }
-        .disposed(by: disposeBag)
-        
-        jobsSearchBar.text = "java"
-    }
-    
-    
-    func printJobLocation (jobs: [Job]) -> (){
-        for job in jobs {
-            print(job.location!)
-        }
-    }
+
     
     func getJobs(searchQuery: String) -> Observable<[Job]> {
         print(searchQuery)
@@ -54,8 +35,6 @@ class SearchTableViewController: UITableViewController {
                     switch response.result {
                     case .success:
                         guard let data = response.data else {
-                            // if no error provided by alamofire return .notFound error instead.
-                            // .notFound should never happen here?
                             print(response.error ?? GetJobsFailureReason.notFound)
                             observer.onError(response.error ?? GetJobsFailureReason.notFound)
                             return
@@ -63,8 +42,9 @@ class SearchTableViewController: UITableViewController {
                         do {
                             print(url)
 //                            let json : JSON = JSON(response.result.value!)
-                            let friends = try JSONDecoder().decode([Job].self, from: data)
-                            observer.onNext(friends)
+                            let jobs = try JSONDecoder().decode([Job].self, from: data)
+                        
+                            observer.onNext(jobs)
                         } catch {
                             print(error)
                             observer.onError(error)
@@ -86,13 +66,45 @@ class SearchTableViewController: UITableViewController {
 
 }
 
-//extension SearchTableViewController {
-//    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return items.count
-//    }
-//
-//    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//
-//    }
-//}
+extension SearchTableViewController {
+    
+    override func viewDidLoad() {
+           super.viewDidLoad()
+        jobsSearchBar.rx.text
+                  .observeOn(MainScheduler.asyncInstance)
+                  .debounce(.milliseconds(1500), scheduler: MainScheduler.instance)
+                  .distinctUntilChanged()
+                  .flatMap { value in return self.getJobs(searchQuery: value!) }
+                  .subscribe { (event) in self.printJobLocation(jobsArr: event.element!) }
+              .disposed(by: disposeBag)
+              
+              jobsSearchBar.text = "java"
+       }
+    
+    func printJobLocation (jobsArr: [Job]) {
+        jobs = jobsArr
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return jobs.count
+    }
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "searchCell", for: indexPath)
+        let job = jobs[indexPath.row]
+        cell.textLabel?.text = job.title
+        cell.detailTextLabel?.text = job.location
+        return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "toDescription", sender: self)
+    }
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
+    }
+}
 
