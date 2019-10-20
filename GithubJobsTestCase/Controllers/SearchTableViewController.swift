@@ -11,6 +11,8 @@ import RxCocoa
 import RxSwift
 import Alamofire
 import SwiftyJSON
+import SDWebImage
+
 
 class SearchTableViewController: UITableViewController {
     
@@ -23,6 +25,7 @@ class SearchTableViewController: UITableViewController {
     }
 
     let disposeBag = DisposeBag()
+    
 
     
     func getJobs(searchQuery: String) -> Observable<[Job]> {
@@ -68,6 +71,8 @@ class SearchTableViewController: UITableViewController {
 
 extension SearchTableViewController {
     
+    
+    
     override func viewDidLoad() {
            super.viewDidLoad()
         jobsSearchBar.rx.text
@@ -92,19 +97,43 @@ extension SearchTableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return jobs.count
     }
+    
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "searchCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "searchCell", for: indexPath) as! JobsCell
+      
         let job = jobs[indexPath.row]
-        cell.textLabel?.text = job.title
-        cell.detailTextLabel?.text = job.location
+        
+        cell.titleLabel?.text = job.title
+        cell.locationLabel?.text = job.location
+
+        if job.company_logo != nil {
+            cell.logoImageView.sd_setImage(with: URL(string: job.company_logo!))
+        } else{
+            cell.logoImageView.image = UIImage(named:"no-logo")
+        }
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "toDescription", sender: self)
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+
+        let job = jobs[indexPath.row]
+//        let selectedJob = job.description
+        performSegue(withIdentifier: "toDescription", sender: job)
     }
+    
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?)  {
+        if segue.identifier == "toDescription" {
+            if let searchTableViewController = segue.destination as? DescriptionViewController {
+                searchTableViewController.job = sender as? Job
+            }
+        }
     }
 }
 

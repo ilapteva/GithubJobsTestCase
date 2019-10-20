@@ -10,6 +10,7 @@ target 'GithubJobsTestCase' do
   pod 'RxCocoa'
   pod 'SwiftyJSON'
   pod 'Alamofire'
+  pod 'SDWebImage'
   
 
 end

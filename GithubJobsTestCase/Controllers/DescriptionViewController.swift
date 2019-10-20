@@ -11,5 +11,14 @@ import UIKit
 
 class DescriptionViewController: UIViewController {
     
-    @IBOutlet weak var descriptionTextView: UITextView!
+    var job: Job?
+    
+    @IBOutlet weak var descriptionLabel: UILabel!
+    
+//
+//    descriptionLabel.text = job.description
+    
+   
+    
+  
 }
