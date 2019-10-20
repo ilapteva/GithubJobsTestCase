@@ -10,9 +10,9 @@ import Foundation
 
 class Job: Codable{
     
-    var title: String = ""
-    var company_logo: String = ""
-    var location: String = ""
-    var description: String = ""
+    var title: String? = ""
+    var company_logo: String? = ""
+    var location: String? = ""
+    var description: String? = ""
 
 }

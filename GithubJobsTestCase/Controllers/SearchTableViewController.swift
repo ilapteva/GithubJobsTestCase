@@ -30,14 +30,21 @@ class SearchTableViewController: UITableViewController {
             .observeOn(MainScheduler.asyncInstance)
             .debounce(.milliseconds(1500), scheduler: MainScheduler.instance)
             .distinctUntilChanged()
-            .flatMapLatest { value in return self.getJobs(searchQuery: value!) }
-            .subscribe { (event) in print(event) }
+            .flatMap { value in return self.getJobs(searchQuery: value!) }
+            .subscribe { (event) in self.printJobLocation(jobs: event.element!) }
         .disposed(by: disposeBag)
         
         jobsSearchBar.text = "java"
     }
     
-    func getJobs(searchQuery: String) -> Observable<JSON> {
+    
+    func printJobLocation (jobs: [Job]) -> (){
+        for job in jobs {
+            print(job.location!)
+        }
+    }
+    
+    func getJobs(searchQuery: String) -> Observable<[Job]> {
         print(searchQuery)
         let url = "https://jobs.github.com/positions.json?search=\(searchQuery)&page=0"
         return Observable.create { observer -> Disposable in
@@ -55,9 +62,9 @@ class SearchTableViewController: UITableViewController {
                         }
                         do {
                             print(url)
-                            let json : JSON = JSON(response.result.value!)
-                            //let friends = try JSONDecoder().decode([Job].self, from: data)
-                            observer.onNext(json)
+//                            let json : JSON = JSON(response.result.value!)
+                            let friends = try JSONDecoder().decode([Job].self, from: data)
+                            observer.onNext(friends)
                         } catch {
                             print(error)
                             observer.onError(error)
