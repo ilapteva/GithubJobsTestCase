@@ -14,7 +14,7 @@ import SwiftyJSON
 import SDWebImage
 
 
-class SearchTableViewController: UITableViewController {
+class SearchTableViewController: UITableViewController, UISearchBarDelegate {
 
     private var currentPage = 0
     private var pageCount = 50
@@ -30,6 +30,7 @@ class SearchTableViewController: UITableViewController {
     }
 
     let disposeBag = DisposeBag()
+    
     
     func getJobs(page: Int) -> Observable<[Job]> {
         currentPage = page
@@ -68,7 +69,10 @@ class SearchTableViewController: UITableViewController {
         }
     }
 
-
+   func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+       searchBar.resignFirstResponder()
+       
+   }
 }
 
 extension SearchTableViewController {
@@ -76,6 +80,7 @@ extension SearchTableViewController {
     
     override func viewDidLoad() {
            super.viewDidLoad()
+        self.jobsSearchBar.delegate = self
         refreshControl = UIRefreshControl()
         refreshControl?.addTarget(self, action: #selector(refreshJobs), for: .valueChanged)
 
