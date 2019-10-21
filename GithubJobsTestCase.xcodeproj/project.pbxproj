@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A148AF1235D32860009196F /* LoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A148AF0235D32850009196F /* LoadingCell.swift */; };
 		2A3EF6E7235C6AFB0065B2DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3EF6E6235C6AFB0065B2DC /* AppDelegate.swift */; };
 		2A3EF6E9235C6AFB0065B2DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3EF6E8235C6AFB0065B2DC /* SceneDelegate.swift */; };
 		2A3EF6EB235C6AFB0065B2DC /* SearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3EF6EA235C6AFB0065B2DC /* SearchTableViewController.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2A148AF0235D32850009196F /* LoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingCell.swift; sourceTree = "<group>"; };
 		2A3EF6E3235C6AFB0065B2DC /* GithubJobsTestCase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GithubJobsTestCase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A3EF6E6235C6AFB0065B2DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2A3EF6E8235C6AFB0065B2DC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -122,6 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				2A98343D235CDEB400782C82 /* JobsCell.swift */,
+				2A148AF0235D32850009196F /* LoadingCell.swift */,
 			);
 			path = TableViewCell;
 			sourceTree = "<group>";
@@ -263,6 +266,7 @@
 				2A983438235C71B500782C82 /* DescriptionViewController.swift in Sources */,
 				2A3EF6E7235C6AFB0065B2DC /* AppDelegate.swift in Sources */,
 				2A98343E235CDEB400782C82 /* JobsCell.swift in Sources */,
+				2A148AF1235D32860009196F /* LoadingCell.swift in Sources */,
 				2A3EF6E9235C6AFB0065B2DC /* SceneDelegate.swift in Sources */,
 				2A98343B235CAC9C00782C82 /* Job.swift in Sources */,
 			);

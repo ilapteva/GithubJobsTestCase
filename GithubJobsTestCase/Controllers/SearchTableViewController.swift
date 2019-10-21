@@ -15,7 +15,12 @@ import SDWebImage
 
 
 class SearchTableViewController: UITableViewController {
-    
+
+    private var currentPage = 0
+    private var pageCount = 50
+    private var shouldShowLoadingCell = false
+    private var isLoading = true
+   
     var jobs: [Job] = []
     @IBOutlet weak var jobsSearchBar: UISearchBar!
     
@@ -26,11 +31,10 @@ class SearchTableViewController: UITableViewController {
 
     let disposeBag = DisposeBag()
     
-
-    
-    func getJobs(searchQuery: String) -> Observable<[Job]> {
-        print(searchQuery)
-        let url = "https://jobs.github.com/positions.json?search=\(searchQuery)&page=0"
+    func getJobs(page: Int) -> Observable<[Job]> {
+        currentPage = page
+        print("load page\(page) for query \(jobsSearchBar.text!)")
+        let url = "https://jobs.github.com/positions.json?search=\(jobsSearchBar.text!)&page=\(page)"
         return Observable.create { observer -> Disposable in
             Alamofire.request(url, method: .get)
                 .validate(statusCode: 200..<500)
@@ -44,12 +48,10 @@ class SearchTableViewController: UITableViewController {
                         }
                         do {
                             print(url)
-//                            let json : JSON = JSON(response.result.value!)
                             let jobs = try JSONDecoder().decode([Job].self, from: data)
-                        
+                            print(jobs.count)
                             observer.onNext(jobs)
                         } catch {
-                            print(error)
                             observer.onError(error)
                         }
                     case .failure(let error):
@@ -58,7 +60,6 @@ class SearchTableViewController: UITableViewController {
                         {
                             observer.onError(reason)
                         }
-                        print(error)
                         observer.onError(error)
                     }
             }
@@ -67,27 +68,63 @@ class SearchTableViewController: UITableViewController {
         }
     }
 
+
 }
 
 extension SearchTableViewController {
-    
-    
+
     
     override func viewDidLoad() {
            super.viewDidLoad()
-        jobsSearchBar.rx.text
-                  .observeOn(MainScheduler.asyncInstance)
-                  .debounce(.milliseconds(1500), scheduler: MainScheduler.instance)
-                  .distinctUntilChanged()
-                  .flatMap { value in return self.getJobs(searchQuery: value!) }
-                  .subscribe { (event) in self.printJobLocation(jobsArr: event.element!) }
-              .disposed(by: disposeBag)
-              
+        refreshControl = UIRefreshControl()
+        refreshControl?.addTarget(self, action: #selector(refreshJobs), for: .valueChanged)
+
+        refreshControl?.beginRefreshing()
+        if (jobsSearchBar.text == nil) {
               jobsSearchBar.text = "java"
-       }
+        }
+        isLoading = true
+        jobsSearchBar.rx.text
+            .observeOn(MainScheduler.asyncInstance)
+            .debounce(.milliseconds(500), scheduler: MainScheduler.instance)
+            .distinctUntilChanged()
+            .flatMap { value in return self.getJobs(page: 0) }
+            .subscribe { (event) in self.renderJobs(jobsArr: event.element!, refresh: true) }
+            .disposed(by: disposeBag)
+        
+        if (jobsSearchBar.text == nil) {
+            jobsSearchBar.text = "ios"
+        }
+    }
     
-    func printJobLocation (jobsArr: [Job]) {
-        jobs = jobsArr
+    @objc
+    private func refreshJobs() {
+        currentPage = 0
+        isLoading = true;
+        getJobs(page: currentPage)
+        .subscribe { (event) in self.renderJobs(jobsArr: event.element!, refresh: true) }
+    }
+    
+    private func fetchNextPage() {
+        currentPage += 1
+        isLoading = true;
+        getJobs(page: currentPage)
+            .subscribe { (event) in self.renderJobs(jobsArr: event.element!, refresh: false) }
+        .disposed(by: disposeBag)
+    }
+    
+    func renderJobs(jobsArr: [Job], refresh: Bool = true) {
+        if (refresh) {
+            jobs = jobsArr
+        } else {
+            for job in jobsArr {
+                self.jobs.append(job)
+            }
+        }
+        self.shouldShowLoadingCell = jobs.count % self.pageCount == 0 && jobsArr.count != 0
+
+        self.refreshControl?.endRefreshing()
+        isLoading = false
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
@@ -95,33 +132,43 @@ extension SearchTableViewController {
 
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return jobs.count
+        let count = jobs.count
+        return shouldShowLoadingCell ? count + 1 : count
     }
     
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "searchCell", for: indexPath) as! JobsCell
-      
-        let job = jobs[indexPath.row]
         
-        cell.titleLabel?.text = job.title
-        cell.locationLabel?.text = job.location
+        if isLoadingIndexPath(indexPath) {
+            return LoadingCell(style: .default, reuseIdentifier: "loading")
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "searchCell", for: indexPath) as! JobsCell
+            
+              let job = jobs[indexPath.row]
+              
+              cell.titleLabel?.text = job.title
+              cell.locationLabel?.text = job.location
 
-        if job.company_logo != nil {
-            cell.logoImageView.sd_setImage(with: URL(string: job.company_logo!))
-        } else{
-            cell.logoImageView.image = UIImage(named:"no-logo")
+              if job.company_logo != nil {
+                  cell.logoImageView.sd_setImage(with: URL(string: job.company_logo!))
+              } else{
+                  cell.logoImageView.image = UIImage(named:"no-logo")
+              }
+              return cell
         }
-        return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-
         let job = jobs[indexPath.row]
-//        let selectedJob = job.description
         performSegue(withIdentifier: "toDescription", sender: job)
+    }
+    
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard isLoadingIndexPath(indexPath) else { return }
+        if (!isLoading) {
+           fetchNextPage()
+        }
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -134,6 +181,11 @@ extension SearchTableViewController {
                 searchTableViewController.job = sender as? Job
             }
         }
+    }
+    
+    private func isLoadingIndexPath(_ indexPath: IndexPath) -> Bool {
+        guard shouldShowLoadingCell else { return false }
+        return indexPath.row == self.jobs.count
     }
 }
 
